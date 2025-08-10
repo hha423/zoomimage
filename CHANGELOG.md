@@ -2,6 +2,11 @@
 
 Translations: [简体中文](CHANGELOG.zh.md)
 
+# new
+
+* fix: 修复仅发生在 1.4.0-rc02 版本的 contentOriginSize 更新时没有 minScale、middenScale、maxScale
+  状态没有跟着更新的 bug
+
 # 1.4.0-rc02
 
 * fix: Fixed a bug in the Compose version component that caused the contents to be displayed in the

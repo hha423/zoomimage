@@ -729,8 +729,9 @@ class ZoomableCore constructor(
         minScale = newInitialZoom.minScale
         mediumScale = newInitialZoom.mediumScale
         maxScale = newInitialZoom.maxScale
-
-        if (!skipResetTransform) {
+        if (skipResetTransform) {
+            onTransformChanged(this@ZoomableCore)
+        } else {
             coroutineScope.launch(Dispatchers.Main.immediate) {
                 stopAllAnimation(caller)
             }

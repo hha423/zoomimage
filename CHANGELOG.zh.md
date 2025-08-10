@@ -2,6 +2,11 @@
 
 翻译：[English](CHANGELOG.md)
 
+# new
+
+* fix: Fixed bugs that did not have minScale, middenScale, maxScale statuses that did not follow the
+  update when the contentOriginSize of the 1.4.0-rc02 version were updated.
+
 # 1.4.0-rc02
 
 * fix: 修复 Compose 版本组件因为 contentSize 和 containerSize 响应延迟导致内容先显示在左上角再快速移动到中间的
