@@ -121,6 +121,13 @@ fun Modifier.zooming(zoomable: ZoomableState, firstScaleByContentSize: Boolean =
                 } else {
                     ScaleFactorCompat.Origin
                 }
+                zoomable.logger.v {
+                    "ZoomableState. graphicsLayer. " +
+                            "scaleByContentSize. " +
+                            "contentOriginSize=$contentOriginSize, " +
+                            "contentSize=$contentSize, " +
+                            "scaleFactor=$scaleFactor"
+                }
                 scaleX = scaleFactor.scaleX
                 scaleY = scaleFactor.scaleY
                 transformOrigin = TransformOrigin(0f, 0f)
