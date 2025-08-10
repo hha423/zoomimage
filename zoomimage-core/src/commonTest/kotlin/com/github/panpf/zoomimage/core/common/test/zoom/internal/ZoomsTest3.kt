@@ -2,17 +2,13 @@ package com.github.panpf.zoomimage.core.common.test.zoom.internal
 
 import com.github.panpf.zoomimage.test.Item
 import com.github.panpf.zoomimage.test.printlnBatchBuildExpression
-import com.github.panpf.zoomimage.util.IntSizeCompat as IntSize
-import com.github.panpf.zoomimage.util.OffsetCompat as Offset
 import com.github.panpf.zoomimage.util.RectCompat
-import com.github.panpf.zoomimage.util.RectCompat as Rect
 import com.github.panpf.zoomimage.util.filterNegativeZeros
 import com.github.panpf.zoomimage.util.limitTo
 import com.github.panpf.zoomimage.util.rotate
 import com.github.panpf.zoomimage.util.times
 import com.github.panpf.zoomimage.util.toShortString
 import com.github.panpf.zoomimage.util.toSize
-import com.github.panpf.zoomimage.zoom.AlignmentCompat as Alignment
 import com.github.panpf.zoomimage.zoom.AlignmentCompat.Companion.BottomCenter
 import com.github.panpf.zoomimage.zoom.AlignmentCompat.Companion.BottomEnd
 import com.github.panpf.zoomimage.zoom.AlignmentCompat.Companion.BottomStart
@@ -23,7 +19,6 @@ import com.github.panpf.zoomimage.zoom.AlignmentCompat.Companion.TopCenter
 import com.github.panpf.zoomimage.zoom.AlignmentCompat.Companion.TopEnd
 import com.github.panpf.zoomimage.zoom.AlignmentCompat.Companion.TopStart
 import com.github.panpf.zoomimage.zoom.ContainerWhitespace
-import com.github.panpf.zoomimage.zoom.ContentScaleCompat as ContentScale
 import com.github.panpf.zoomimage.zoom.ContentScaleCompat.Companion.Crop
 import com.github.panpf.zoomimage.zoom.ContentScaleCompat.Companion.FillBounds
 import com.github.panpf.zoomimage.zoom.ContentScaleCompat.Companion.FillHeight
@@ -36,6 +31,7 @@ import com.github.panpf.zoomimage.zoom.ScrollEdge
 import com.github.panpf.zoomimage.zoom.internal.calculateContentBaseDisplayRect
 import com.github.panpf.zoomimage.zoom.internal.calculateLocateUserOffset
 import com.github.panpf.zoomimage.zoom.internal.calculateNextStepScale
+import com.github.panpf.zoomimage.zoom.internal.calculateNextStepScaleWithRatio
 import com.github.panpf.zoomimage.zoom.internal.calculateScaleUserOffset
 import com.github.panpf.zoomimage.zoom.internal.calculateScrollEdge
 import com.github.panpf.zoomimage.zoom.internal.calculateTransformOffset
@@ -46,6 +42,11 @@ import com.github.panpf.zoomimage.zoom.name
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import com.github.panpf.zoomimage.util.IntSizeCompat as IntSize
+import com.github.panpf.zoomimage.util.OffsetCompat as Offset
+import com.github.panpf.zoomimage.util.RectCompat as Rect
+import com.github.panpf.zoomimage.zoom.AlignmentCompat as Alignment
+import com.github.panpf.zoomimage.zoom.ContentScaleCompat as ContentScale
 
 class ZoomsTest3 {
 
@@ -3424,26 +3425,192 @@ class ZoomsTest3 {
 
     @Test
     fun testCalculateNextStepScale() {
-        val stepScales = floatArrayOf(1f, 2f, 3f, 4f, 5f)
-        assertEquals(1f, calculateNextStepScale(stepScales, 0f))
-        assertEquals(1f, calculateNextStepScale(stepScales, 0.8f))
-        assertEquals(2f, calculateNextStepScale(stepScales, 0.8f, delta = 0.2f))
-        assertEquals(2f, calculateNextStepScale(stepScales, 0.9f))
-        assertEquals(1f, calculateNextStepScale(stepScales, 0.9f, delta = 0f))
-        assertEquals(2f, calculateNextStepScale(stepScales, 1.0f))
-        assertEquals(2f, calculateNextStepScale(stepScales, 1.5f))
-        assertEquals(3f, calculateNextStepScale(stepScales, 2.5f))
-        assertEquals(4f, calculateNextStepScale(stepScales, 3.5f))
-        assertEquals(5f, calculateNextStepScale(stepScales, 4.5f))
-        assertEquals(1f, calculateNextStepScale(stepScales, 5.5f))
-        assertEquals(1f, calculateNextStepScale(stepScales, 6.5f))
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 1f, 0.8f to 1f, 0.9f to 2f,
+            1.0f to 2f, 1.6f to 2f, 1.7f to 2f, 1.8f to 2f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 3f, 2.8f to 3f, 2.9f to 4f,
+            3.0f to 4f, 3.6f to 4f, 3.7f to 4f, 3.8f to 4f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 5f, 4.8f to 5f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScale(
+                    stepScales = floatArrayOf(1f, 2f, 3f, 4f, 5f),
+                    currentScale = currentScale
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
 
-        assertEquals(0f, calculateNextStepScale(floatArrayOf(), 0f))
-        assertEquals(0.8f, calculateNextStepScale(floatArrayOf(), 0.8f))
-        assertEquals(0.9f, calculateNextStepScale(floatArrayOf(), 0.9f))
-        assertEquals(1.0f, calculateNextStepScale(floatArrayOf(), 1.0f))
-        assertEquals(2.5f, calculateNextStepScale(floatArrayOf(), 2.5f))
-        assertEquals(3.5f, calculateNextStepScale(floatArrayOf(), 3.5f))
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 1f, 0.8f to 2f, 0.9f to 2f,
+            1.0f to 2f, 1.6f to 2f, 1.7f to 2f, 1.8f to 3f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 3f, 2.8f to 4f, 2.9f to 4f,
+            3.0f to 4f, 3.6f to 4f, 3.7f to 4f, 3.8f to 5f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 5f, 4.8f to 1f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScale(
+                    stepScales = floatArrayOf(1f, 2f, 3f, 4f, 5f),
+                    currentScale = currentScale,
+                    delta = 0.2f
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
+
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 2f, 0.8f to 2f, 0.9f to 2f,
+            1.0f to 2f, 1.6f to 2f, 1.7f to 3f, 1.8f to 3f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 4f, 2.8f to 4f, 2.9f to 4f,
+            3.0f to 4f, 3.6f to 4f, 3.7f to 5f, 3.8f to 5f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 1f, 4.8f to 1f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScale(
+                    stepScales = floatArrayOf(1f, 2f, 3f, 4f, 5f),
+                    currentScale = currentScale,
+                    delta = 0.3f
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
+
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 1f, 0.8f to 1f, 0.9f to 3f,
+            1.0f to 3f, 1.6f to 3f, 1.7f to 3f, 1.8f to 3f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 3f, 2.8f to 3f, 2.9f to 5f,
+            3.0f to 5f, 3.6f to 5f, 3.7f to 5f, 3.8f to 5f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 5f, 4.8f to 5f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScale(
+                    stepScales = floatArrayOf(1f, 3f, 5f),
+                    currentScale = currentScale,
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
+    }
+
+    @Test
+    fun testCalculateNextStepScaleWithRatio() {
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 1f, 0.8f to 1f, 0.9f to 2f,
+            1.0f to 2f, 1.6f to 2f, 1.7f to 2f, 1.8f to 2f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 3f, 2.8f to 3f, 2.9f to 4f,
+            3.0f to 4f, 3.6f to 4f, 3.7f to 4f, 3.8f to 4f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 5f, 4.8f to 5f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScaleWithRatio(
+                    stepScales = floatArrayOf(1f, 2f, 3f, 4f, 5f),
+                    currentScale = currentScale,
+                    deltaRatio = 0.1f
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
+
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 1f, 0.8f to 2f, 0.9f to 2f,
+            1.0f to 2f, 1.6f to 2f, 1.7f to 2f, 1.8f to 3f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 3f, 2.8f to 4f, 2.9f to 4f,
+            3.0f to 4f, 3.6f to 4f, 3.7f to 4f, 3.8f to 5f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 5f, 4.8f to 1f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScaleWithRatio(
+                    stepScales = floatArrayOf(1f, 2f, 3f, 4f, 5f),
+                    currentScale = currentScale,
+                    deltaRatio = 0.2f
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
+
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 2f, 0.8f to 2f, 0.9f to 2f,
+            1.0f to 2f, 1.6f to 2f, 1.7f to 3f, 1.8f to 3f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 4f, 2.8f to 4f, 2.9f to 4f,
+            3.0f to 4f, 3.6f to 4f, 3.7f to 5f, 3.8f to 5f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 1f, 4.8f to 1f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScaleWithRatio(
+                    stepScales = floatArrayOf(1f, 2f, 3f, 4f, 5f),
+                    currentScale = currentScale,
+                    deltaRatio = 0.3f
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
+
+        listOf(
+            0.0f to 1f, 0.6f to 1f, 0.7f to 1f, 0.8f to 3f, 0.9f to 3f,
+            1.0f to 3f, 1.6f to 3f, 1.7f to 3f, 1.8f to 3f, 1.9f to 3f,
+            2.0f to 3f, 2.6f to 3f, 2.7f to 3f, 2.8f to 5f, 2.9f to 5f,
+            3.0f to 5f, 3.6f to 5f, 3.7f to 5f, 3.8f to 5f, 3.9f to 5f,
+            4.0f to 5f, 4.6f to 5f, 4.7f to 5f, 4.8f to 1f, 4.9f to 1f,
+            5.0f to 1f, 5.1f to 1f,
+        ).forEach { (currentScale, expectedScale) ->
+            assertEquals(
+                expected = expectedScale,
+                actual = calculateNextStepScaleWithRatio(
+                    stepScales = floatArrayOf(1f, 3f, 5f),
+                    currentScale = currentScale,
+                    deltaRatio = 0.1f
+                ),
+                message = "currentScale=$currentScale"
+            )
+        }
+
+        assertEquals(
+            expected = 1f,
+            actual = calculateNextStepScaleWithRatio(
+                stepScales = floatArrayOf(),
+                currentScale = 1f,
+                deltaRatio = 0.1f,
+            ),
+        )
+        assertEquals(
+            expected = 2f,
+            actual = calculateNextStepScaleWithRatio(
+                stepScales = floatArrayOf(),
+                currentScale = 2f,
+                deltaRatio = 0.1f,
+            ),
+        )
+
+        assertEquals(
+            expected = 10f,
+            actual = calculateNextStepScaleWithRatio(
+                stepScales = floatArrayOf(10f),
+                currentScale = 1f,
+                deltaRatio = 0.1f,
+            ),
+        )
+        assertEquals(
+            expected = 10f,
+            actual = calculateNextStepScaleWithRatio(
+                stepScales = floatArrayOf(10f),
+                currentScale = 2f,
+                deltaRatio = 0.1f,
+            ),
+        )
     }
 
     data class Item10(

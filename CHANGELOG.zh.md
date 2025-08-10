@@ -6,6 +6,8 @@
 
 * fix: Fixed bugs that did not have minScale, middenScale, maxScale statuses that did not follow the
   update when the contentOriginSize of the 1.4.0-rc02 version were updated.
+* improve: 现在双击缩放时如果当前缩放倍数距离下一个缩放倍数的差值小于两步缩放倍数差值的 35%
+  就跳过下一个缩放倍数，这样能避免较小的双击缩放距离
 
 # 1.4.0-rc02
 

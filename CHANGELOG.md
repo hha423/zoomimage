@@ -6,6 +6,9 @@ Translations: [简体中文](CHANGELOG.zh.md)
 
 * fix: 修复仅发生在 1.4.0-rc02 版本的 contentOriginSize 更新时没有 minScale、middenScale、maxScale
   状态没有跟着更新的 bug
+* improve: Now when double-clicking to zoom, if the difference between the current zoom multiple and
+  the next zoom multiple is less than 35% of the difference between the two-step zoom multiple, skip
+  the next zoom multiple, so as to avoid a smaller double-click zoom distance.
 
 # 1.4.0-rc02
 

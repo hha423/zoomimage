@@ -1153,6 +1153,37 @@ fun calculateNextStepScale(
         ?: stepScales.first()
 }
 
+/**
+ * Calculates the next scale factor for double-click scaling
+ *
+ * @param deltaRatio – Based on the difference in the ratio between two-step scaling
+ * @see com.github.panpf.zoomimage.core.common.test.zoom.internal.ZoomsTest3.testCalculateNextStepScaleWithRatio
+ */
+fun calculateNextStepScaleWithRatio(
+    stepScales: FloatArray,
+    currentScale: Float,
+    deltaRatio: Float
+): Float {
+    if (stepScales.isEmpty()) return currentScale
+    if (stepScales.size > 1) {
+        stepScales.forEachIndexed { index, scale ->
+            val delta = if (index < stepScales.lastIndex) {
+                val nextScale = stepScales[index + 1]
+                (nextScale - scale) * deltaRatio
+            } else {
+                val lastScale = stepScales[index - 1]
+                (scale - lastScale) * deltaRatio
+            }
+            val formattedScale = scale.format(1)
+            val formattedAddedCurrentScale = (currentScale + delta).format(1)
+            if (formattedScale > formattedAddedCurrentScale) {
+                return scale
+            }
+        }
+    }
+    return stepScales.first()
+}
+
 
 /* ******************************************* Point ***************************************** */
 

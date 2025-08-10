@@ -391,7 +391,11 @@ class ZoomableCore constructor(
         } else {
             floatArrayOf(minScale, mediumScale)
         }
-        return calculateNextStepScale(stepScales, transform.scaleX)
+        return calculateNextStepScaleWithRatio(
+            stepScales = stepScales,
+            currentScale = transform.scaleX,
+            deltaRatio = 0.35f
+        )
     }
 
     fun touchPointToContentPoint(touchPoint: OffsetCompat): OffsetCompat {
