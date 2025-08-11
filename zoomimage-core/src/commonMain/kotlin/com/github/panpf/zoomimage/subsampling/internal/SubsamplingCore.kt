@@ -367,13 +367,15 @@ class SubsamplingCore constructor(
                 contentSize = contentSize,
                 regionDecoders = regionDecoders,
             )
-            if (tileDecoderResult.isFailure) {
+            if (tileDecoderResult.isFailure
+                && tileDecoderResult.exceptionOrNull() !is CancellationException
+                && tileDecoderResult.exceptionOrNull() !is kotlinx.coroutines.CancellationException
+            ) {
                 logger.d {
                     "$module. resetTileDecoder:$caller. failed. " +
-                            "${tileDecoderResult.exceptionOrNull()!!.message}. " +
+                            "${tileDecoderResult.exceptionOrNull()}. " +
                             "'${subsamplingImage.key}'"
                 }
-                zoomableBridge.setContentOriginSize(IntSizeCompat.Zero)
                 return@launch
             }
 

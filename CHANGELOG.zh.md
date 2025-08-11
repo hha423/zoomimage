@@ -4,8 +4,10 @@
 
 # new
 
-* fix: Fixed bugs that did not have minScale, middenScale, maxScale statuses that did not follow the
-  update when the contentOriginSize of the 1.4.0-rc02 version were updated.
+* fix: 修复仅发生在 1.4.0-rc02 版本的 contentOriginSize 更新时没有 minScale、middenScale、maxScale
+  状态没有跟着更新的 bug。[#108](https://github.com/panpf/zoomimage/issues/108)
+* fix: 修复因 contentOriginSize 被意外清空导致子采样缩放倍数异常的
+  bug。[#109](https://github.com/panpf/zoomimage/issues/109)
 * improve: 现在双击缩放时如果当前缩放倍数距离下一个缩放倍数的差值小于两步缩放倍数差值的 35%
   就跳过下一个缩放倍数，这样能避免较小的双击缩放距离
 

@@ -4,8 +4,11 @@ Translations: [简体中文](CHANGELOG.zh.md)
 
 # new
 
-* fix: 修复仅发生在 1.4.0-rc02 版本的 contentOriginSize 更新时没有 minScale、middenScale、maxScale
-  状态没有跟着更新的 bug
+* fix: Fixed bugs that did not have minScale, middenScale, maxScale statuses that did not follow the
+  update when the contentOriginSize of the 1.4.0-rc02 version were
+  updated. [#108](https://github.com/panpf/zoomimage/issues/108)
+* fix: Fixed a bug that caused abnormal subsampling scaling multiple due to unexpected emptied
+  contentOriginSize. [#109](https://github.com/panpf/zoomimage/issues/109)
 * improve: Now when double-clicking to zoom, if the difference between the current zoom multiple and
   the next zoom multiple is less than 35% of the difference between the two-step zoom multiple, skip
   the next zoom multiple, so as to avoid a smaller double-click zoom distance.
