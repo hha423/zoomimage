@@ -482,6 +482,7 @@ class ZoomableCore constructor(
         requiredMainThread()
         if (this.contentOriginSize != contentOriginSize) {
             this.contentOriginSize = contentOriginSize
+            logger.d { "$module. contentOriginSize=$contentOriginSize" }
             reset("contentOriginSizeChanged")
         }
     }
@@ -708,7 +709,7 @@ class ZoomableCore constructor(
                 && (hasUserActions || animationAdapter.isRunning() || animationAdapter.isFlingRunning())
         logger.d {
             val transform = newBaseTransform + newUserTransform
-            "$module. reset:$caller. $mode. ${if (skipResetTransform) "skip. " else ""}" +
+            "$module. reset:$caller. $mode. ${if (skipResetTransform) "skipped. " else ""}" +
                     "containerSize=${newResetParams.containerSize.toShortString()}, " +
                     "contentSize=${newResetParams.contentSize.toShortString()}, " +
                     "contentOriginSize=${newResetParams.contentOriginSize.toShortString()}, " +

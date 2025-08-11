@@ -213,7 +213,7 @@ class SubsamplingCoreTest {
     }
 
     @Test
-    fun testUpdateContainerSize() = runTest {
+    fun testPreferredTileSize() = runTest {
         val imageFile: ResourceImageFile = ResourceImages.hugeChina
         val contentSize: IntSizeCompat = imageFile.size / 8
 
@@ -317,7 +317,7 @@ class SubsamplingCoreTest {
     }
 
     @Test
-    fun testUpdateContentSize() = runTest {
+    fun testContentSize() = runTest {
         val imageFile: ResourceImageFile = ResourceImages.hugeChina
         val contentSize: IntSizeCompat = imageFile.size / 8
 

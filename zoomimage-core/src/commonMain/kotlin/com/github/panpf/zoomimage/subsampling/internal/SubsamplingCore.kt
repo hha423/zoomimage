@@ -46,6 +46,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
 
 /**
@@ -259,6 +260,10 @@ class SubsamplingCore constructor(
         requiredMainThread()
         if (this.regionDecoders != regionDecoders) {
             this.regionDecoders = regionDecoders
+            logger.d {
+                val regionDecodersString = regionDecoders.joinToString(prefix = "[", postfix = "]")
+                "$module. regionDecoders=$regionDecodersString. '$logKey'"
+            }
             resetTileDecoder("regionDecodersChanged")
         }
     }
@@ -277,7 +282,7 @@ class SubsamplingCore constructor(
             // Container size animations cause frequent changes in v, so a delayed reset avoids this problem
             @Suppress("OPT_IN_USAGE")
             zoomableBridge.containerSizeFlow.debounce(80).collect {
-                updateContainerSize(it)
+                updatePreferredTileSize(it)
             }
         }
         coroutineScope.launch {
@@ -315,7 +320,7 @@ class SubsamplingCore constructor(
         this.coroutineScope = null
     }
 
-    private fun updateContainerSize(containerSize: IntSizeCompat) {
+    private fun updatePreferredTileSize(containerSize: IntSizeCompat) {
         val oldPreferredTileSize = preferredTileSize
         val newPreferredTileSize = calculatePreferredTileSize(containerSize)
         val checkPassed = checkNewPreferredTileSize(
@@ -323,9 +328,9 @@ class SubsamplingCore constructor(
             newPreferredTileSize = newPreferredTileSize
         )
         logger.d {
-            "$module. setContainerSize. preferredTileSize ${if (checkPassed) "changed" else "keep"}. " +
-                    "oldPreferredTileSize=${oldPreferredTileSize.toShortString()}, " +
-                    "newPreferredTileSize=${newPreferredTileSize.toShortString()}, " +
+            "$module. preferredTileSize. " +
+                    "${if (checkPassed) "changed" else "keep"}. " +
+                    "${oldPreferredTileSize.toShortString()} -> ${newPreferredTileSize.toShortString()}, " +
                     "containerSize=${containerSize.toShortString()}. " +
                     "'$logKey'"
         }
@@ -338,6 +343,7 @@ class SubsamplingCore constructor(
     private fun updateContentSize(contentSize: IntSizeCompat) {
         if (this.contentSize != contentSize) {
             this.contentSize = contentSize
+            logger.d { "$module. contentSize=$contentSize. '$logKey'" }
             resetTileDecoder("contentSizeChanged")
         }
     }
@@ -405,7 +411,8 @@ class SubsamplingCore constructor(
         val contentSize = contentSize
         if (subsamplingImage == null || tileDecoder == null || imageInfo == null || preferredTileSize.isEmpty() || contentSize.isEmpty()) {
             logger.d {
-                "$module. resetTileManager:$caller. failed. " +
+                "$module. resetTileManager:$caller. skipped. " +
+                        "parameters are not ready yet. " +
                         "subsamplingImage=${subsamplingImage}, " +
                         "contentSize=${contentSize.toShortString()}, " +
                         "preferredTileSize=${preferredTileSize.toShortString()}, " +

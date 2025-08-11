@@ -106,15 +106,17 @@ internal class SubsamplingDrawTilesNode(
         val imageLoadRect: IntRectCompat = subsampling.imageLoadRect
             .takeIf { !it.isEmpty }?.toCompat() ?: return
         val backgroundTiles: List<TileSnapshot> = subsampling.backgroundTiles
-
+        val showTileBounds = subsampling.showTileBounds
         val canvas = drawContext.canvas
+
         var backgroundCount = 0
         var insideLoadCount = 0
         var outsideLoadCount = 0
         var realDrawCount = 0
+
         backgroundTiles.forEach { tileSnapshot ->
             if (tileSnapshot.srcRect.overlaps(imageLoadRect)) {
-                if (drawTile(canvas, tileSnapshot, tilePaint)) {
+                if (drawTile(canvas, tileSnapshot, drawBounds = false)) {
                     backgroundCount++
                 }
             }
@@ -125,11 +127,8 @@ internal class SubsamplingDrawTilesNode(
         foregroundTiles.forEach { tileSnapshot ->
             if (tileSnapshot.srcRect.overlaps(imageLoadRect)) {
                 insideLoadCount++
-                if (drawTile(canvas, tileSnapshot, tilePaint)) {
+                if (drawTile(canvas, tileSnapshot, drawBounds = showTileBounds)) {
                     realDrawCount++
-                }
-                if (subsampling.showTileBounds) {
-                    drawTileBounds(canvas, tileSnapshot, boundsPaint)
                 }
             } else {
                 outsideLoadCount++
@@ -149,47 +148,38 @@ internal class SubsamplingDrawTilesNode(
     private fun drawTile(
         canvas: Canvas,
         tileSnapshot: TileSnapshot,
-        tilePaint: Paint
+        drawBounds: Boolean
     ): Boolean {
         val tileImage = tileSnapshot.tileImage?.takeIf { !it.isRecycled } ?: return false
         val imageBitmap = (tileImage as ComposeTileImage).bitmap
+        val dstRect = tileSnapshot.srcRect.toPlatform()
 
         tilePaint.alpha = tileSnapshot.alpha / 255f
-
-        val srcSize = IntSize(imageBitmap.width, imageBitmap.height)
-        val dstOffset = tileSnapshot.srcRect.topLeft.toPlatform()
-        val dstSize = tileSnapshot.srcRect.size.toPlatform()
         canvas.drawImageRect(
             image = imageBitmap,
             srcOffset = IntOffset.Zero,
-            srcSize = srcSize,
-            dstOffset = dstOffset,
-            dstSize = dstSize,
+            srcSize = IntSize(imageBitmap.width, imageBitmap.height),
+            dstOffset = dstRect.topLeft,
+            dstSize = dstRect.size,
             paint = tilePaint
         )
+
+        if (drawBounds) {
+            val boundsColor = tileColor(
+                state = tileSnapshot.state,
+                from = tileSnapshot.from,
+                withinLoadArea = true,
+            )
+            boundsPaint.color = Color(boundsColor)
+            canvas.drawRect(
+                left = dstRect.left.toFloat(),
+                top = dstRect.top.toFloat(),
+                right = dstRect.right.toFloat(),
+                bottom = dstRect.bottom.toFloat(),
+                paint = boundsPaint
+            )
+        }
+
         return true
-    }
-
-    private fun drawTileBounds(
-        canvas: Canvas,
-        tileSnapshot: TileSnapshot,
-        boundsPaint: Paint
-    ) {
-        val tileDrawRect = tileSnapshot.srcRect.toPlatform()
-
-        val boundsColor = tileColor(
-            state = tileSnapshot.state,
-            from = tileSnapshot.from,
-            withinLoadArea = true,
-        )
-        boundsPaint.color = Color(boundsColor)
-
-        canvas.drawRect(
-            left = tileDrawRect.left.toFloat(),
-            top = tileDrawRect.top.toFloat(),
-            right = tileDrawRect.right.toFloat(),
-            bottom = tileDrawRect.bottom.toFloat(),
-            paint = boundsPaint
-        )
     }
 }
