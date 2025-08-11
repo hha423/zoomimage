@@ -26,12 +26,12 @@ fun ZoomImageInfo(photo: Photo, zoomState: ZoomState) {
             buildList {
                 add(InfoItem(null, photo.originalUrl))
 
-                val imageInfo = subsampling.imageInfo
                 val baseInfo = """
-                        containerSize: ${zoomable.containerSize.let { "${it.width}x${it.height}" }}
-                        contentSize: ${zoomable.contentSize.let { "${it.width}x${it.height}" }}
-                        contentOriginSize: ${imageInfo?.let { "${it.width}x${it.height}" }}
+                        containerSize: ${zoomable.containerSize.toShortString()}
+                        contentSize: ${zoomable.contentSize.toShortString()}
+                        contentOriginSize: ${zoomable.contentOriginSize.toShortString()}
                         rotation: ${zoomable.transform.rotation.roundToInt()}
+                        mimeType: ${subsampling.imageInfo?.mimeType}
                     """.trimIndent()
                 add(InfoItem("Base", baseInfo))
 

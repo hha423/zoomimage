@@ -31,7 +31,6 @@ import com.github.panpf.zoomimage.sample.util.formatFileSize
 import com.github.panpf.zoomimage.util.round
 import com.github.panpf.zoomimage.util.toShortString
 import com.github.panpf.zoomimage.zoom.toShortString
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.math.roundToInt
 
@@ -70,15 +69,15 @@ fun buildZoomImageViewInfos(
 
     val zoomable = zoomImageView.zoomable
     val subsampling = zoomImageView.subsampling
-    val imageInfo = subsampling.imageInfoState.value
     val transform = zoomable.transformState.value
     val baseTransform = zoomable.baseTransformState.value
     val userTransform = zoomable.userTransformState.value
     val baseInfo = """
-        containerSize: ${zoomable.containerSizeState.value.let { "${it.width}x${it.height}" }}
-        contentSize: ${zoomable.contentSizeState.value.let { "${it.width}x${it.height}" }}
-        contentOriginSize: ${imageInfo?.let { "${it.width}x${it.height}" }}
+        containerSize: ${zoomable.containerSizeState.value.toShortString()}
+        contentSize: ${zoomable.contentSizeState.value.toShortString()}
+        contentOriginSize: ${zoomable.contentOriginSizeState.value.toShortString()}
         rotation: ${transform.rotation.roundToInt()}
+        mimeType: ${subsampling.imageInfoState.value?.mimeType}
     """.trimIndent()
     add(InfoItem(title = "Base: ", content = baseInfo))
 
