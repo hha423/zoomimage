@@ -2,7 +2,7 @@
 
 翻译：[English](CHANGELOG.md)
 
-# new
+# 1.4.0-rc03
 
 * fix: 修复仅发生在 1.4.0-rc02 版本的 contentOriginSize 更新时没有 minScale、middenScale、maxScale
   状态没有跟着更新的 bug。[#108](https://github.com/panpf/zoomimage/issues/108)

@@ -2,7 +2,7 @@
 
 Translations: [简体中文](CHANGELOG.zh.md)
 
-# new
+# 1.4.0-rc03
 
 * fix: Fixed bugs that did not have minScale, middenScale, maxScale statuses that did not follow the
   update when the contentOriginSize of the 1.4.0-rc02 version were
