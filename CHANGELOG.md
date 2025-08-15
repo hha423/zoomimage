@@ -2,6 +2,80 @@
 
 Translations: [简体中文](CHANGELOG.zh.md)
 
+# 1.4.0
+
+![TIP]
+> * There is no change compared to the 1.4.0-rc03 version
+> * The following is the update relative to version 1.3.0, which has destructive changes. Please be
+    careful to check it out
+
+zoom:
+
+* break: ZoomableState, ZoomableEngine All properties are no
+  longer mutable, and they provide a special 'set\*()' method.
+* fix: Fixed a bug that caused abnormal subsampling scaling multiple due to unexpected emptied
+  contentOriginSize. [#109](https://github.com/panpf/zoomimage/issues/109)
+* fix: Fixed a bug in the Compose version component that caused the contents to be displayed in the
+  upper left corner first and then quickly moved to the middle due to delayed responses of
+  contentSize and containerSize. [#107](https://github.com/panpf/zoomimage/issues/107)
+* fix: Fixed a bug where the contentOriginSize change would interrupt the user's operation
+  animation. [#105](https://github.com/panpf/zoomimage/issues/105)
+* fix: Fixed a bug where the content zoom multiple suddenly changes to the reading mode multiple
+  when the content zooms to minScale in reading mode and only the containerSize
+  changes. [#106](https://github.com/panpf/zoomimage/issues/106)
+* fix: Fixed all bugs in which ZoomImageView does not restore subsampling when attached again after
+  detached. [#99](https://github.com/panpf/zoomimage/issues/99)
+* fix: Fixed the problem that the content size is incorrect when CoilZoomAsyncImage is turned on
+  crossfade and the placeholder image is larger than the loaded
+  image. [#94](https://github.com/panpf/zoomimage/issues/94)
+* fix: Fixed a bug where SketchZoomAsyncImage and SketchZoomImageView do not support parameters such
+  as downloadCachePolicy and downloadCacheKey. [#89](https://github.com/panpf/zoomimage/issues/89)
+* fix: Fixed a bug where CoilZoomAsyncImage and CoilZoomImageView do not support parameters such
+  as diskCachePolicy and networkCachePolicy. [#90](https://github.com/panpf/zoomimage/issues/90)
+* fix: Fixed a bug where GlideZoomImageView does not support
+  thumbnail(). [#93](https://github.com/panpf/zoomimage/issues/93)
+* fix: Reading mode in RTL mode should position the initial offset to the
+  end. [#84](https://github.com/panpf/zoomimage/issues/84)
+* improve: Now when double-clicking to zoom, if the difference between the current zoom multiple and
+  the next zoom multiple is less than 35% of the difference between the two-step zoom multiple, skip
+  the next zoom multiple, so as to avoid a smaller double-click zoom distance.
+* improve: ZoomImageView supports two-finger drag
+  gestures. [#102](https://github.com/panpf/zoomimage/issues/102)
+* improve: Modifier.zoomable() now reduces one ModifierNodeElement
+* new: ZoomableState adds layoutDirection property, ZoomableEngine adds rtlLayoutDirectionState
+  property
+* new: ContinuousTransformType Added ROLLBACK type
+* new: ZoomableState and ZoomableEngine add sourceScaleFactor, sourceVisibleRect property and
+  sourceToDraw method. [#92](https://github.com/panpf/zoomimage/issues/92)
+
+subsampling:
+
+* break: SubsamplingState, SubsamplingEngine All properties are no
+  longer mutable, and they provide a special 'set\*()' method.
+* break: The return result of RegionDecoder.decodeRegion() is changed from TileImage to TileBitmap
+* break: Remove the key and fromCache properties of TileImage
+* fix: Fixed a bug where Sketch's ThumbnailMemoryCacheStateImage crashed due to subsampling tile
+  cache. [#100](https://github.com/panpf/zoomimage/issues/100)
+* fix: Fixed a bug where subsampling never decodes pixels in the last column and the last
+  row. [#101](https://github.com/panpf/zoomimage/issues/101)
+* fix: Now the stopped property of the subsample is also involved in the calculation of
+  ready. [#97](https://github.com/panpf/zoomimage/issues/97)
+* improve: GlideZoomAsyncImage and GlideZoomImageView now use asFile to load models of unknown
+  types. [#76](https://github.com/panpf/zoomimage/issues/76)
+* new: SubsamplingState and SubsamplingEngine add disabled attributes to disable subsampling
+  feature. [#96](https://github.com/panpf/zoomimage/issues/96)
+* new: SubsamplingState and SubsamplingEngine add disabledAutoStopWithLifecycle attributes to
+  disable automatic subsampling stopping according to
+  Lifecycle. [#91](https://github.com/panpf/zoomimage/issues/91)
+
+other：
+
+* improve: Compose components for sketch and coil versions add stability configuration at compile
+  time
+* new: Added `zoomimage-compose-sketch4-koin` and `zoomimage-view-sketch4-koin` modules to adapt to
+  sketch4's koin mode. [#95](https://github.com/panpf/zoomimage/issues/95)
+* depend: Update sketch to 4.3.1
+
 # 1.4.0-rc03
 
 * fix: Fixed bugs that did not have minScale, middenScale, maxScale statuses that did not follow the
@@ -17,7 +91,7 @@ Translations: [简体中文](CHANGELOG.zh.md)
 
 * fix: Fixed a bug in the Compose version component that caused the contents to be displayed in the
   upper left corner first and then quickly moved to the middle due to delayed responses of
-  contentSize and containerSize. [#107](https://github.com/panpf/zoomimage/issues/105)
+  contentSize and containerSize. [#107](https://github.com/panpf/zoomimage/issues/107)
 * break: ZoomableState, ZoomableEngine, SubsamplingState, SubsamplingEngine All properties are no
   longer mutable, and they provide a special 'set\*()' method.
 * improve: Compose components for sketch and coil versions add stability configuration at compile
@@ -41,14 +115,14 @@ Translations: [简体中文](CHANGELOG.zh.md)
 
 # 1.4.0-beta04
 
+* break: The return result of RegionDecoder.decodeRegion() is changed from TileImage to TileBitmap
+* break: Remove the key and fromCache properties of TileImage
 * fix: Fixed all bugs in which ZoomImageView does not restore subsampling when attached again after
   detached. [#99](https://github.com/panpf/zoomimage/issues/99)
 * fix: Fixed a bug where Sketch's ThumbnailMemoryCacheStateImage crashed due to subsampling tile
   cache. [#100](https://github.com/panpf/zoomimage/issues/100)
 * fix: Fixed a bug where subsampling never decodes pixels in the last column and the last
   row. [#101](https://github.com/panpf/zoomimage/issues/101)
-* break: The return result of RegionDecoder.decodeRegion() is changed from TileImage to TileBitmap
-* break: Remove the key and fromCache properties of TileImage
 
 # 1.4.0-beta03
 

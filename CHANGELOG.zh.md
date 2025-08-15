@@ -2,6 +2,70 @@
 
 翻译：[English](CHANGELOG.md)
 
+# 1.4.0
+
+![TIP]
+> * 和 1.4.0-rc03 版本相比没有任何变化
+> * 以下是相对于 1.3.0 版本的更新内容，其中有破坏性更改，请注意查看
+
+zoom：
+
+* break: ZoomableState、ZoomableEngine 所有的属性都不再是 mutable
+  的，为它们提供了专门的 'set\*()' 方法
+* fix: 修复因 contentOriginSize 被意外清空导致子采样缩放倍数异常的
+  bug。[#109](https://github.com/panpf/zoomimage/issues/109)
+* fix: 修复 Compose 版本组件因为 contentSize 和 containerSize 响应延迟导致内容先显示在左上角再快速移动到中间的
+  bug。[#107](https://github.com/panpf/zoomimage/issues/107)
+* fix: 修复 contentOriginSize 改变会打断用户的操作动画的
+  bug。[#105](https://github.com/panpf/zoomimage/issues/105)
+* fix: 修复阅读模式下内容缩放至 minScale 且仅 containerSize 变化时内容缩放倍数突然变化至阅读模式倍数的
+  bug。[#106](https://github.com/panpf/zoomimage/issues/106)
+* fix: 修复所有 ZoomImageView 在 detached 之后再次 attached 时不会恢复子采样的
+  bug。[#99](https://github.com/panpf/zoomimage/issues/99)
+* fix: 修复 CoilZoomAsyncImage 开启 crossfade
+  并且占位图像比加载图像大时内容大小不正确的问题。[#94](https://github.com/panpf/zoomimage/issues/94)
+* fix: 修复 SketchZoomAsyncImage 和 SketchZoomImageView 不支持 downloadCachePolicy 和
+  downloadCacheKey 等参数的 bug。 [#89](https://github.com/panpf/zoomimage/issues/89)
+* fix: 修复 CoilZoomAsyncImage 和 CoilZoomImageView 不支持 diskCachePolicy 和
+  networkCachePolicy 等参数的 bug。 [#90](https://github.com/panpf/zoomimage/issues/90)
+* fix: 修复 GlideZoomImageView 不支持 thumbnail() 的
+  bug。 [#93](https://github.com/panpf/zoomimage/issues/93)
+* fix: RTL
+  模式下阅读模式应该将初始偏移定位到末尾。 [#84](https://github.com/panpf/zoomimage/issues/84)
+* improve: 现在双击缩放时如果当前缩放倍数距离下一个缩放倍数的差值小于两步缩放倍数差值的 35%
+  就跳过下一个缩放倍数，这样能避免较小的双击缩放距离
+* improve: ZoomImageView 支持双指拖动手势。[#102](https://github.com/panpf/zoomimage/issues/102)
+* improve: Modifier.zoomable() 现在减少了一个 ModifierNodeElement
+* new: ZoomableState 新增 layoutDirection 属性，ZoomableEngine 新增 rtlLayoutDirectionState 属性
+* new: ContinuousTransformType 新增 ROLLBACK 类型
+* new: ZoomableState 和 ZoomableEngine 新增 sourceScaleFactor、 sourceVisibleRect 属性和 sourceToDraw
+  方法。[#92](https://github.com/panpf/zoomimage/issues/92)
+
+subsampling：
+
+* break: SubsamplingState、SubsamplingEngine 所有的属性都不再是 mutable
+  的，为它们提供了专门的 'set\*()' 方法
+* break: RegionDecoder.decodeRegion() 的返回结果从 TileImage 改为 TileBitmap
+* break: 移除 TileImage 的 key 和 fromCache 属性
+* fix: 修复 Sketch 的 ThumbnailMemoryCacheStateImage 会因为子采样的 tile 缓存而崩溃的
+  bug。[#100](https://github.com/panpf/zoomimage/issues/100)
+* fix: 修复子采样始终不会解码最后一列和最后一行的像素的
+  bug。[#101](https://github.com/panpf/zoomimage/issues/101)
+* fix: 现在子采样的 stopped 属性也参与计算 ready。[#97](https://github.com/panpf/zoomimage/issues/97)
+* improve: GlideZoomAsyncImage 和 GlideZoomImageView 现在使用 asFile 的方式
+  加载未知类型的 model。 [#76](https://github.com/panpf/zoomimage/issues/76)
+* new: SubsamplingState 和 SubsamplingEngine 新增 disabled
+  属性可以禁用子采样功能。[#96](https://github.com/panpf/zoomimage/issues/96)
+* new: SubsamplingState 和 SubsamplingEngine 新增 disabledAutoStopWithLifecycle 属性可以禁用根据
+  Lifecycle 自动停止子采样功能。 [#91](https://github.com/panpf/zoomimage/issues/91)
+
+other：
+
+* improve: sketch 和 coil 版本的 compose 组件在编译时增加稳定性配置
+* new: 新增 `zoomimage-compose-sketch4-koin` 和 `zoomimage-view-sketch4-koin` 模块，适配 sketch4 的
+  koin 模式。[#95](https://github.com/panpf/zoomimage/issues/95)
+* depend: 更新 sketch 4.3.1
+
 # 1.4.0-rc03
 
 * fix: 修复仅发生在 1.4.0-rc02 版本的 contentOriginSize 更新时没有 minScale、middenScale、maxScale
@@ -14,7 +78,7 @@
 # 1.4.0-rc02
 
 * fix: 修复 Compose 版本组件因为 contentSize 和 containerSize 响应延迟导致内容先显示在左上角再快速移动到中间的
-  bug。[#107](https://github.com/panpf/zoomimage/issues/105)
+  bug。[#107](https://github.com/panpf/zoomimage/issues/107)
 * break: ZoomableState、ZoomableEngine、SubsamplingState、SubsamplingEngine 所有的属性都不再是 mutable
   的，为它们提供了专门的 'set\*()' 方法
 * improve: sketch 和 coil 版本的 compose 组件在编译时增加稳定性配置
@@ -34,14 +98,14 @@
 
 # 1.4.0-beta04
 
+* break: RegionDecoder.decodeRegion() 的返回结果从 TileImage 改为 TileBitmap
+* break: 移除 TileImage 的 key 和 fromCache 属性
 * fix: 修复所有 ZoomImageView 在 detached 之后再次 attached 时不会恢复子采样的
   bug。[#99](https://github.com/panpf/zoomimage/issues/99)
 * fix: 修复 Sketch 的 ThumbnailMemoryCacheStateImage 会因为子采样的 tile 缓存而崩溃的
   bug。[#100](https://github.com/panpf/zoomimage/issues/100)
 * fix: 修复子采样始终不会解码最后一列和最后一行的像素的
   bug。[#101](https://github.com/panpf/zoomimage/issues/101)
-* break: RegionDecoder.decodeRegion() 的返回结果从 TileImage 改为 TileBitmap
-* break: 移除 TileImage 的 key 和 fromCache 属性
 
 # 1.4.0-beta03
 
